@@ -1,0 +1,78 @@
+{
+	"nodes":[
+		{
+			"id":"941b1b6639c30740",
+			"type":"text",
+			"text":"`sqlite3` 库本质上只是 **Python 与 SQLite 数据库之间的“翻译官”和“管道”**。\n\n只需要掌握以下 6 个常用方法，Python sqlite3 的操作就全部学完了：\n\n| 阶段         | 方法 / 代码                                | 作用                   |\n| ---------- | -------------------------------------- | -------------------- |\n| **连接数据库**  | `sqlite3.connect(\"data.db\")`           | 连接或创建数据库文件           |\n| **执行 SQL** | `cursor.execute(sql, params)`          | 执行单条 SQL 语句（增删改查/建表） |\n|            | `cursor.executemany(sql, params_list)` | 批量执行 SQL             |\n| **获取数据**   | `cursor.fetchone()`                    | 获取查询单条结果             |\n|            | `cursor.fetchmany(n)`                  | 获取查询前n条结果            |\n|            | `cursor.fetchall()`                    | 获取查询全部结果             |\n| **保存更改**   | `conn.commit()`                        | 提交事务，让增删改生效          |\n| **关闭连接**   | `cursor.close()`                       | 关闭游标                 |\n|            | `conn.close()`                         | 关闭连接                 |\n",
+			"styleAttributes":{},
+			"x":-2050,
+			"y":-280,
+			"width":1149,
+			"height":527
+		},
+		{
+			"id":"03717b4ad5dc0e60",
+			"type":"text",
+			"text":"## Python sqlite3 核心概念和基础链接\n\n整个数据库就是一个 db 文件，test.db：这就是一个数据库\n\n不需要安装任何额外的东西，支持 SQL 原生语法\n\n1. 步骤1：链接数据库\n    1. `conn = sqlite3.connect(\"数据库.db\")`\n2. 步骤2：创建游标，通过连接对象，创建游标\n    1. `cursor = conn.cursor()`\n3. 步骤3：执行 sql，通过游标对象，执行sql\n    1. `cursor.execute(sql,params)`\n    2. `cursor.executemany(sql,params_list)`\n4. 步骤4：提交事物，通过连接对象，提交事物\n    1. `conn.commit()`\n5. 步骤5：关闭链接，关闭游标和连接\n    1. `cursor.close()`\n    2. `conn.close()`\n",
+			"styleAttributes":{},
+			"x":-2935,
+			"y":-280,
+			"width":813,
+			"height":797
+		},
+		{
+			"id":"82b7b68e2a68e072",
+			"type":"text",
+			"text":"- 获取数据\n    - `curosr.fetchone()`\n    - `cursor.fetchall()`",
+			"styleAttributes":{},
+			"x":-2050,
+			"y":264,
+			"width":1149,
+			"height":270
+		},
+		{
+			"id":"7719b9f06d2090cf",
+			"type":"text",
+			"text":"## SQL 基本语法\nSQL（Structured Query Language）是操作关系型数据库的通用语言。无论你使用的是 SQLite、MySQL、PostgreSQL 还是 SQL Server，核心语法都是通用的。\n\nSQL 语句通常分为三大类：**数据定义语言 (DDL)**、**数据操作语言 (DML)** 和 **数据查询语言 (DQL)**。\n\n### 一、 数据定义：建表与删表（DDL）\n\n用于定义数据库和表的结构。\n\n#### 1. 创建表（CREATE TABLE）\n\n```SQL\nCREATE TABLE IF NOT EXISTS users (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,  -- 主键，自增 ID\n    username TEXT NOT NULL UNIQUE,          -- 必填，且值唯一\n    age INTEGER CHECK(age >= 0),           -- 条件约束：年龄必须大于等于0\n    email TEXT,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 默认当前时间\n);\n```\n\n#### 2. 删除表（DROP TABLE）\n\n```SQL\nDROP TABLE IF EXISTS users;\n```\n\n#### 3. 修改表结构（ALTER TABLE）\n\n```SQL\n-- 给 users 表新增一列 phone\nALTER TABLE users ADD COLUMN phone TEXT;\n```\n\n### 二、 数据操作：增、删、改（DML）\n\n用于管理表里面的具体记录。\n\n#### 1. 插入数据（INSERT）\n\n```SQL\n-- 插入指定字段的数据\nINSERT INTO users (username, age, email) \nVALUES ('Alice', 25, 'alice@example.com');\n\n-- 批量插入多条数据\nINSERT INTO users (username, age, email) VALUES \n('Bob', 30, 'bob@example.com'),\n('Charlie', 22, 'charlie@example.com');\n```\n\n#### 2. 更新数据（UPDATE）\n\n> **警告**：执行 `UPDATE` 时一定要带 `WHERE` 条件，否则全表数据都会被修改！\n\n```SQL\n-- 修改 ID 为 1 的用户的 email 和 age\nUPDATE users \nSET email = 'new_alice@example.com', age = 26 \nWHERE id = 1;\n```\n\n#### 3. 删除数据（DELETE）\n\n> **警告**：执行 `DELETE` 时一定要带 `WHERE` 条件，否则整张表的数据都会被清空！\n\n```SQL\n-- 删除 ID 为 2 的用户\nDELETE FROM users \nWHERE id = 2;\n```\n\n### 三、 数据查询：获取与筛选（DQL）\n\nSQL 中最核心、最常用的部分。\n\n#### 1. 基础查询与别名（SELECT ... FROM）\n\n```SQL\n-- 查询全部列\nSELECT * FROM users;\n\n-- 查询指定列，并使用 AS 给列重命名（别名）\nSELECT username AS 用户名, age AS 年龄 FROM users;\n```\n\n#### 2. 条件筛选（WHERE）\n\n常用运算符：`=`、`!=`（或 `<>`）、`>`、`<`、`>=`、`<=`、`IN`、`BETWEEN ... AND`、`LIKE`、`IS NULL`。\n\n```SQL\n-- 多条件组合（AND / OR）\nSELECT * FROM users WHERE age >= 18 AND email IS NOT NULL;\n\n-- 模糊查询（LIKE）：% 表示任意长度字符，_ 表示单个字符\nSELECT * FROM users WHERE username LIKE 'A%'; -- 查找以 A 开头的名字\n\n-- 范围与集合匹配\nSELECT * FROM users WHERE age BETWEEN 20 AND 30;\nSELECT * FROM users WHERE age IN (18, 25, 30);\n```\n\n#### 3. 排序与分页（ORDER BY & LIMIT）\n\n```SQL\n-- 按年龄降序排列（DESC），如果年龄相同按 ID 升序排列（ASC，默认）\nSELECT * FROM users \nORDER BY age DESC, id ASC;\n\n-- 分页查询：只取前 5 条，并且跳过前 10 条（从第 11 条开始）\nSELECT * FROM users \nLIMIT 5 OFFSET 10;\n```\n\n#### 4. 聚合函数与分组（GROUP BY & HAVING）\n\n常用聚合函数：`COUNT()`、`SUM()`、`AVG()`、`MAX()`、`MIN()`。\n\n```SQL\n-- 统计用户总数和平均年龄\nSELECT COUNT(*) AS 总人数, AVG(age) AS 平均年龄 FROM users;\n\n-- 按年龄分组，统计每个年龄的人数，且只保留人数大于 1 的分组\nSELECT age, COUNT(*) AS 人数 \nFROM users \nGROUP BY age \nHAVING 人数 > 1;\n```\n\n### 四、 多表关联查询（JOIN）\n\n假设有两张表：`users`（用户表）和 `orders`（订单表，包含 `user_id` 关联 `users.id`）。\n\n|**连接方式**|**语法示例**|**作用**|\n|---|---|---|\n|**内连接 (INNER JOIN)**|`FROM users INNER JOIN orders ON users.id = orders.user_id`|只返回两张表都有匹配的数据|\n|**左连接 (LEFT JOIN)**|`FROM users LEFT JOIN orders ON users.id = orders.user_id`|返回左表所有数据，右表匹配不到则显示 `NULL`|\n\n**示例（内连接查询用户及其对应的订单金额）：**\n\n```SQL\nSELECT users.username, orders.order_id, orders.amount\nFROM users\nINNER JOIN orders ON users.id = orders.user_id\nWHERE orders.amount > 100;\n```\n\n### 五、 补充：在 Python `sqlite3` 中调用的安全原则\n\n在 Python 里执行带有变量的 SQL 语句时，**永远不要使用字符串拼接（f-string 或 `%`）**，必须使用 `?` 占位符防范 SQL 注入安全漏洞：\n\n```Python\n# 推荐的安全写法：\nuser_id = 1\ncursor.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,))\n\n# 危险的错误写法（极易受到 SQL 注入攻击！）：\n# cursor.execute(f\"SELECT * FROM users WHERE id = {user_id}\")\n```\n",
+			"styleAttributes":{},
+			"x":-693,
+			"y":-300,
+			"width":1052,
+			"height":834
+		},
+		{
+			"id":"742ad526bbdd2b87",
+			"type":"text",
+			"text":"```python\n\"\"\"\nsqlite3 标准库学习\n\"\"\"\n\nimport sqlite3\n\n# 步骤1：连接数据库（不存在会自动创建 test.db 文件）\nconn = sqlite3.connect(\"test.db\")\n\n# 步骤2：创建游标\ncursor = conn.cursor()\n\n# 步骤3：通过游标对象，执行 SQL（已修正拼写并添加 IF NOT EXISTS）\ncursor.execute(\n    \"\"\"\n    CREATE TABLE IF NOT EXISTS people (\n        id integer primary key autoincrement,\n        name TEXT NOT NULL,\n        age INT\n    )\n    \"\"\"\n)\n\n# 步骤4：通过连接对象提交事务\nconn.commit()\n\n# 步骤5：关闭游标与连接\ncursor.close()\nconn.close()\n\n# 增删查改\n# 最好使用?占位符，不要使用字符串拼接操作\nwith sqlite3.connect(\"test.db\") as conn:\n    cursor = conn.cursor()\n    # 插入单条数据\n    # 通过 ? 占位符的形式插入数据，类型是元组\n    cursor.execute(\"insert into people (name,age) values (?,?)\", (\"jom\", 25))\n    # 通过命令参数的形式插入数据，类型是字典\n    cursor.execute(\n        \"insert into people (name,age) values (:key_1,:key_2)\",\n        {\"key_1\": \"kom\", \"key_2\": 33},\n    )\n\n    # 为了避免系统资源的损耗，可以将需要插入的数据存放到缓冲区中，当缓冲区积累到一定量级时，然后再统一批量插入，是比较高效的。\n\n    # 批量插入\n    users = [(\"lom\", 22), (\"pom\", 33), (\"iom\", 44)]\n    res = cursor.executemany(\"insert into people (name,age) values (?,?)\", users)\n    print(\"批量插入成功\")\n\n# 1、数据查找\nwith sqlite3.connect(\"test.db\") as conn:\n    cursor = conn.cursor()\n\n    # 如何查询所有的数据\n    cursor.execute(\"select * from people\")\n    all_users = cursor.fetchall()\n\n    for cho in all_users:\n        print(f\"id:{cho[0]},name:{cho[1]},age{cho[2]}\")\n\n    # 找到某一个特定数据\n    # 第一种操作：先查询出所有的数据，然后在所有数据之中进行筛选，最后再输出目标数据\n    # 第二种操作：直接查询出目标数据，然后再输出\n    # 查询id=9\n    cursor.execute(\"select * from people where id=?\", (9,))\n    user1 = cursor.fetchall()\n    print(user1)\n\n# 2、数据的更新\nwith sqlite3.connect(\"test.db\") as conn:\n    cursor = conn.cursor()\n    cursor.execute(\"update people set age=? where id=?\", (100, 9))\n    cursor.execute(\"select * from people where id=?\", (9,))\n    user1 = cursor.fetchall()\n    print(user1)\n\n# 数据的删除\nwith sqlite3.connect(\"test.db\") as conn:\n    cursor = conn.cursor()\n    cursor.execute(\"delete from people where id = ?\", (1,))\n    cursor.execute(\"select * from people\")\n    all_users = cursor.fetchall()\n    print(all_users)\n\n# 3、进阶实用技巧\n# 让查询结果返回为字典\n# 默认查询格式：[(9,\"pom\")] > 返回的元组数组\n# 可以返回为字典数据 [{id:9,name:pom,age:100}]\n# 不需要关系下标，只需要知道我们需要查询的键值对是如何组成的\ndef dict_factory(cursor, row):\n    d = {}\n    for idx, col in enumerate(cursor.description):\n        d[col[0]] = row[idx]\n    return d\n\nwith sqlite3.connect(\"test.db\") as conn:\n    conn.row_factory = dict_factory\n    cursor = conn.cursor()\n    cursor.execute(\"select * from people\")\n    all_users = cursor.fetchall()\n    print(f\"字典格式的用户：\\n{all_users}\")\n\n# 快速查询最后一条数据的id信息\nwith sqlite3.connect(\"test.db\") as conn:\n    cursor=conn.cursor()\n    cursor.execute(\"insert into people (name,age) values (?,?)\", (\"jom\", 25))\n    last_id = cursor.lastrowid\n    print(f\"最后一行的id为：{last_id}\")\n```",
+			"styleAttributes":{},
+			"x":-2240,
+			"y":680,
+			"width":949,
+			"height":572
+		},
+		{
+			"id":"3edb666b33db0c91",
+			"type":"text",
+			"text":"在 Python 的 `sqlite3`（以及大多数符合 Python DB-API 规范的数据库驱动）中，**`cursor`（游标）** 是用于在数据库中**执行 SQL 语句**和**提取查询结果**的核心工具。\n\n游标常用方法主要分为两大类：**执行 SQL 类** 和 **获取数据类**。\n\n### 一、 执行 SQL 的常用方法\n\n#### 1. `cursor.execute(sql, [parameters])`\n\n- **作用**：执行**单条** SQL 语句。\n- **参数**：SQL 语句文本，以及用于填充占位符 `?` 的元组或列表。\n- **示例**：\n\n    Python\n\n    ```\n    # 插入单条记录（推荐使用 ? 占位符）\n    cursor.execute(\n        \"INSERT INTO users (name, age) VALUES (?, ?)\", (\"Alice\", 25)\n    )\n    ```\n\n#### 2. `cursor.executemany(sql, seq_of_parameters)`\n\n- **作用**：**批量执行**同一种 SQL 语句（性能极高，适合一次性插入大量数据）。\n- **参数**：SQL 语句文本，以及包含多组参数的列表/元组容器。\n- **示例**：\n\n    Python\n\n    ```\n    # 一次性插入多条数据\n    data = [(\"Bob\", 30), (\"Charlie\", 22), (\"David\", 28)]\n    \n    cursor.executemany(\"INSERT INTO users (name, age) VALUES (?, ?)\", data)\n    ```\n\n#### 3. `cursor.executescript(sql_script)`\n\n- **作用**：一次性执行由**分号 `;` 隔开的多条 SQL 语句**（通常用于初始化数据库结构或执行 SQL 文件）。\n- **注意**：`executescript` 会先自动调用 `commit()` 提交事务，且不支持 `?` 参数绑定。\n- **示例**：\n\n    Python\n\n    ```\n    sql_script = \"\"\"\n    DROP TABLE IF EXISTS users;\n    CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INT);\n    INSERT INTO users (name, age) VALUES ('Alice', 25);\n    \"\"\"\n    cursor.executescript(sql_script)\n    ```\n\n### 二、 获取查询结果的常用方法\n\n执行 `SELECT` 语句后，数据并没有直接加载到变量中，而是保存在游标的缓冲区中。需要使用以下方法将数据取出：\n\n#### 1. `cursor.fetchone()`\n\n- **作用**：从结果集中获取**下一行**数据，返回一个元组。如果没有更多数据，返回 `None`。\n- **示例**：\n\n    Python\n\n    ```\n    cursor.execute(\"SELECT * FROM users WHERE age > ?\", (20,))\n    row = cursor.fetchone()\n    if row:\n        print(\"获取的第一条记录：\", row)\n    ```\n\n#### 2. `cursor.fetchall()`\n\n- **作用**：获取结果集中的**所有剩余行**，返回一个列表（列表里每一项都是一个元组）。\n- **注意**：如果数据量极巨大（如几十万行），直接 `fetchall()` 可能会撑爆内存。\n- **示例**：\n\n    Python\n\n    ```\n    cursor.execute(\"SELECT * FROM users\")\n    rows = cursor.fetchall()\n    for row in rows:\n        print(row)\n    ```\n\n#### 3. `cursor.fetchmany(size)`\n\n- **作用**：获取结果集中指定的 **`size` 行**数据，返回一个元组列表。\n- **适用场景**：在大数据量查询时实现**分批处理**。\n- **示例**：\n\n    Python\n\n    ```\n    cursor.execute(\"SELECT * FROM users\")\n    while True:\n        batch = cursor.fetchmany(100)  # 每次只取 100 条\n        if not batch:\n            break\n        for row in batch:\n            # 处理数据\n            pass\n    ```\n\n### 三、 游标常用的常用属性与方法\n\n|**属性/方法**|**作用/说明**|\n|---|---|\n|`cursor.lastrowid`|获取**最近一次插入**操作（`INSERT`）所自动生成的自增主键 ID。|\n|`cursor.rowcount`|获取最近一次 `UPDATE` 或 `DELETE` 语句影响的行数（注意：SQLite 中某些情况下不准确）。|\n|`cursor.description`|返回最后一次查询的**列信息元组**（常用它获取 SQL 查询到的字段列名）。|\n|`cursor.close()`|手动关闭游标，释放数据库资源。|\n\n**获取列名的巧用技巧（利用 `cursor.description`）：**\n\nPython\n\n```\ncursor.execute(\"SELECT * FROM users\")\n\n# 获取查询到的所有列名列表\ncolumn_names = [description[0] for description in cursor.description]\nprint(\"字段名：\", column_names)  # ['id', 'name', 'age']\n```\n\n### 四、 游标的迭代机制（Python 特性）\n\n在 Python 中，`cursor` 对象本身是**可迭代的（Iterable）**。这意味着执行 `SELECT` 后，你可以不用调用 `fetchall()`，直接用 `for` 循环遍历游标，这样既高效又节省内存：\n\nPython\n\n```\ncursor.execute(\"SELECT id, name, age FROM users WHERE age >= ?\", (18,))\n\n# 直接对 cursor 进行遍历，内部会自动逐行 fetch\nfor row in cursor:\n    user_id, name, age = row\n    print(f\"ID: {user_id}, 姓名: {name}, 年龄: {age}\")\n```\n",
+			"styleAttributes":{},
+			"x":520,
+			"y":-300,
+			"width":908,
+			"height":841
+		}
+	],
+	"edges":[
+		{
+			"id":"6e7efa6c94aeec85",
+			"styleAttributes":{"pathfindingMethod":"square"},
+			"fromNode":"7719b9f06d2090cf",
+			"fromSide":"right",
+			"toNode":"3edb666b33db0c91",
+			"toSide":"left"
+		}
+	],
+	"metadata":{
+		"version":"1.0-1.0",
+		"frontmatter":{}
+	}
+}
